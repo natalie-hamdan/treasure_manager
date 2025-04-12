@@ -117,6 +117,14 @@ int main (int argc, char *argv[]){
         close(treasures_fd);
         close(logged_fd);
 
+        //symbolic links 
+        char name[50]; //buffer for name of the symlink
+        char target[50]; //buffer for name of file we will point to 
+        sprintf(name, "logged_hunt-%s", hunt_id);//storing formatted text in buffer "name"
+        sprintf(target,"%s/logged_hunt.txt", hunt_id); 
+        symlink(target,name);
+        //target: the real file, name: the link to the real file 
+
         
     }
     

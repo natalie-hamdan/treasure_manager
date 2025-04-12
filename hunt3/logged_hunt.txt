@@ -1,0 +1,7 @@
+ID: treasure3
+username: layla
+Lat: 44.000000
+Lon: 3.000000
+Clue: on table
+
+Value: 11
