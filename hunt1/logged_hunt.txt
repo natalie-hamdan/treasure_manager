@@ -1,0 +1,7 @@
+ID: hhb233s
+username: nataliehh
+Lat: 44.330002
+Lon: 12.340000
+Clue: inside the box
+
+Value: 423

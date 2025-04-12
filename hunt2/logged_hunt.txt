@@ -1,0 +1,7 @@
+ID: treasure2
+username: tasneem
+Lat: 66.300003
+Lon: 77.440002
+Clue: beside red wall
+
+Value: 33
