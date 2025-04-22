@@ -1,0 +1,7 @@
+ID: 57843932
+username: judy
+Lat: 83.000000
+Lon: 20.299999
+Clue: in cafe 
+
+Value: 11
