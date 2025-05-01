@@ -1,0 +1,7 @@
+ID: 6655773
+username: test
+Lat: 88.000000
+Lon: 3.000000
+Clue: test
+
+Value: 1
