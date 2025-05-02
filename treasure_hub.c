@@ -113,30 +113,4 @@ int main() {
     printf("treasure_hub exiting.\n");
     return 0;
 
-    // char cmd[32];
-
-    // printf("\ntreasure_hub ready. \nCommands: \nstart_monitor, stop_monitor, exit\n");
-    // while (1) {
-    //     printf("> ");
-    //     if (!fgets(cmd, sizeof(cmd), stdin))
-    //         break;           
-
-    //     cmd[strcspn(cmd, "\n")] = '\0';
-    //     if (strcmp(cmd, "start_monitor") == 0) {
-    //         start_monitor();
-    //     }
-    //     else if (strcmp(cmd, "stop_monitor") == 0) {
-    //         stop_monitor();
-    //     }
-    //     else if (strcmp(cmd, "exit") == 0) {
-    //         break;
-    //     }
-    //     else {
-    //         printf("Unknown command: %s\n", cmd);
-    //     }
-    // }
-
-    // stop_monitor();
-    // printf("treasure_hub exiting.\n");
-    // return 0;
 }
