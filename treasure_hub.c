@@ -5,7 +5,22 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+
+
 pid_t monitor_pid = 0;
+
+void sigchld_handler(int sig) {
+    int status;
+    pid_t pid;
+
+    while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
+        if (pid == monitor_pid) {
+            monitor_pid = 0;
+        }
+    }
+    
+}
+
 int start_monitor(){
     if (monitor_pid) {
         printf("Monitor already running (pid %d)\n", monitor_pid);
@@ -27,38 +42,65 @@ int start_monitor(){
     
 }
 
-int stop_monitor(){
+int stop_monitor(){ 
+
+    if (monitor_pid == 0){
+        return 0;
+    }
     if (kill(monitor_pid, SIGTERM) !=0){
         perror("kill failed");
         return 1;
     }
-    printf("terminated process with pid: %d", monitor_pid);
+    printf("\nterminated process with pid: %d", monitor_pid);
+
 
     int status;// variable to hold status info
-    if (waitpid(monitor_pid, &status, 0) < 0) { //if it return -1 then it failed
-        perror("waitpid failed");
-    } else {
-        printf("\nMonitor exited with status %d\n", WEXITSTATUS(status)); //else it went fine
-    }
+    printf("\nMonitor exited with status %d\n", WEXITSTATUS(status)); //else it went fine
+
+
     monitor_pid = 0; //restted to zero after child is gone
     return 0;
 }
 
 int main() {
-    char cmd[32];
 
-    printf("\ntreasure_hub ready. \nCommands: \nstart_monitor, stop_monitor, exit\n");
+    struct sigaction sa;
+    memset(&sa, 0, sizeof sa);
+    sa.sa_handler = sigchld_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+    if (sigaction(SIGCHLD, &sa, NULL) < 0) {
+        perror("sigaction");
+        return 1;
+    }
+    char cmd[32];
+    printf(
+        "\ntreasure_hub ready.\n"
+        "Commands:\n"
+        "  start_monitor   – launch the monitor\n"
+        "  stop_monitor    – terminate the monitor\n" //already being handeled by handler
+        "  list            – list hunts via the monitor\n"
+        "  exit            – quit\n"
+    );
+
     while (1) {
         printf("> ");
-        if (!fgets(cmd, sizeof(cmd), stdin))
-            break;            // EOF
-
+        if (!fgets(cmd, sizeof cmd, stdin)) break;
         cmd[strcspn(cmd, "\n")] = '\0';
+
         if (strcmp(cmd, "start_monitor") == 0) {
             start_monitor();
         }
         else if (strcmp(cmd, "stop_monitor") == 0) {
             stop_monitor();
+        }
+        else if (strcmp(cmd, "list") == 0) {
+            if (monitor_pid == 0) {
+                printf("Monitor is not running; start it first.\n");
+            } else {
+                if (kill(monitor_pid, SIGUSR1) < 0)
+                    perror("failed to signal monitor");
+            }
         }
         else if (strcmp(cmd, "exit") == 0) {
             break;
@@ -68,8 +110,33 @@ int main() {
         }
     }
 
-    // ensure we clean up
-    stop_monitor();
     printf("treasure_hub exiting.\n");
     return 0;
+
+    // char cmd[32];
+
+    // printf("\ntreasure_hub ready. \nCommands: \nstart_monitor, stop_monitor, exit\n");
+    // while (1) {
+    //     printf("> ");
+    //     if (!fgets(cmd, sizeof(cmd), stdin))
+    //         break;           
+
+    //     cmd[strcspn(cmd, "\n")] = '\0';
+    //     if (strcmp(cmd, "start_monitor") == 0) {
+    //         start_monitor();
+    //     }
+    //     else if (strcmp(cmd, "stop_monitor") == 0) {
+    //         stop_monitor();
+    //     }
+    //     else if (strcmp(cmd, "exit") == 0) {
+    //         break;
+    //     }
+    //     else {
+    //         printf("Unknown command: %s\n", cmd);
+    //     }
+    // }
+
+    // stop_monitor();
+    // printf("treasure_hub exiting.\n");
+    // return 0;
 }
